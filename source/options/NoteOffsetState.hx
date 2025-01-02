@@ -170,9 +170,6 @@ class NoteOffsetState extends MusicBeatState
 		Conductor.bpm = 128.0;
 		FlxG.sound.playMusic(Paths.music('offsetSong'), 1, true);
 
-		addTouchPad("LEFT_FULL", "A_B_C");
-		addTouchPadCamera();
-
 		super.create();
 	}
 
@@ -362,11 +359,13 @@ class NoteOffsetState extends MusicBeatState
 		{
 			if(controls.UI_LEFT_P)
 			{
+				holdTime = 0;
 				barPercent = Math.max(delayMin, Math.min(ClientPrefs.data.noteOffset - 1, delayMax));
 				updateNoteDelay();
 			}
 			else if(controls.UI_RIGHT_P)
 			{
+				holdTime = 0;
 				barPercent = Math.max(delayMin, Math.min(ClientPrefs.data.noteOffset + 1, delayMax));
 				updateNoteDelay();
 			}
@@ -377,8 +376,6 @@ class NoteOffsetState extends MusicBeatState
 				holdTime += elapsed;
 				if(controls.UI_LEFT) mult = -1;
 			}
-
-			if(controls.UI_LEFT_R || controls.UI_RIGHT_R) holdTime = 0;
 
 			if(holdTime > 0.5)
 			{
@@ -526,6 +523,9 @@ class NoteOffsetState extends MusicBeatState
 		timeTxt.visible = !onComboMenu;
 		beatText.visible = !onComboMenu;
 
+		addTouchPad(onComboMenu ? "NONE" : "LEFT_RIGHT", "A_B_C");
+		addTouchPadCamera();
+
 		controllerPointer.visible = false;
 		FlxG.mouse.visible = false;
 		if(onComboMenu)
@@ -534,6 +534,8 @@ class NoteOffsetState extends MusicBeatState
 			controllerPointer.visible = controls.controllerMode;
 		}
 
+		final buttonAccept:String = (controls.mobileC) ? 'A' : (!controls.controllerMode) ? 'Accept' : 'Start';
+
 		var str:String;
 		var str2:String;
 		if(onComboMenu)
@@ -541,14 +543,7 @@ class NoteOffsetState extends MusicBeatState
 		else
 			str = 'Note/Beat Delay';
 
-                if (controls.mobileC) {
-		str2 = '(Press A to Switch)';
-                } else {
-					if(!controls.controllerMode)
-						str2 = '(Press Accept to Switch)';
-					else
-						str2 = '(Press Start to Switch)';
-                }
+		str2 = '(Press $buttonAccept to Switch)';
 
 		changeModeText.text = '< ${str.toUpperCase()} ${str2.toUpperCase()} >';
 	}
